@@ -4,7 +4,6 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import path from 'path'
 import XEUtils from 'xe-utils'
-import zipPack from 'vite-plugin-zip-pack'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
@@ -26,9 +25,6 @@ export default defineConfig(({ mode, command }) => {
             VITE_APP_DATE_DATE: XEUtils.toDateString(now, 'yyyy-MM-dd HH:mm:ss')
           }
         }
-      }),
-      zipPack({
-        outDir: './'
       })
     ],
     resolve: {
