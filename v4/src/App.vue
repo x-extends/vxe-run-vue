@@ -45,7 +45,7 @@ const createVxeVersionEvent = (name: string) => {
       const { value } = eventParams
       store.setImportMap({
         imports: {
-          [name]: `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/lib/index.umd.min.js`
+          [name]: `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/all.esm.js`
         }
       }, true)
     }
