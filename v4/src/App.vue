@@ -162,7 +162,7 @@ const parseFileInfo = (path: string) => {
 
 // 初始化代码
 store.setFiles({
-  'App.vue': ''
+  'App.vue': '<template></template>'
 })
 
 /**
