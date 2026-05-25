@@ -109,8 +109,10 @@ const sfcOptions = computed(
 
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
-    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@4.0.8/dist/index.umd.min.js`,
-    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@4.14.21/lib/index.umd.min.js`,
+    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@4.0.8/es/all.esm.js`,
+    'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/es/all.esm.js`,
+    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@4.4.12/es/all.esm.js`,
+    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@4.14.21/es/all.esm.js`,
     'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@4.19.1/lib/index.umd.min.js`,
     'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@4.1.4/lib/index.umd.min.js`,
     'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@4.4.5/lib/index.umd.min.js`,
@@ -135,9 +137,12 @@ const theme = ref<'dark' | 'light'>('light')
 
 const isVaporSupported = ref(false)
 const previewOptions = computed(() => ({
+  headHTML: '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@4.13.21/lib/style.min.css">',
   customCode: {
-    importCode: `import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'`,
+    importCode: `import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'
+    import VxeUI from 'vxe-pc-ui'`,
     useCode: `
+      app.use(VxeUI)
       ${isVaporSupported.value ? 'app.use(vaporInteropPlugin)' : ''}
       if (window.devtoolsFormatters) {
         const index = window.devtoolsFormatters.findIndex((v) => v.__vue_custom_formatter)
