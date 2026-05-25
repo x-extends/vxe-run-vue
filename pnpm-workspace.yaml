@@ -1,0 +1,4 @@
+allowBuilds:
+  '@parcel/watcher': false
+minimumReleaseAgeExclude:
+  - vxe-pc-ui@4.14.21
