@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 export function useUIStore (events?: any) {
-  const uiVersionList = ['4.14.21', '4.13.29']
+  const uiVersionList = ['4.18.1', '4.18.0']
   const uiVersionOptions = uiVersionList.map(v => ({ label: v, value: v }))
   const uiRender = reactive({
     name: 'VxeSelect',

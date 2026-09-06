@@ -109,13 +109,13 @@ const sfcOptions = computed(
 
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
-    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@4.0.8/dist/all.esm.js`,
+    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@4.0.13/dist/all.esm.js`,
     'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/dist/all.esm.js`,
-    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@4.4.12/dist/all.esm.js`,
-    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@4.14.21/dist/all.esm.js`,
-    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@4.19.1/dist/all.esm.js`,
-    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@4.1.4/dist/all.esm.js`,
-    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@4.4.5/dist/all.esm.js`,
+    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@4.4.20/dist/all.esm.js`,
+    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${uiVersionList[0]}/dist/all.esm.js`,
+    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${tableVersionList[0]}/dist/all.esm.js`,
+    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${designVersionList[0]}/dist/all.esm.js`,
+    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${ganttVersionList[0]}/dist/all.esm.js`,
     axios: `${import.meta.env.VITE_APP_CDN_URL}axios@1.7.2/esm/axios.min.js`
   }
 }))
