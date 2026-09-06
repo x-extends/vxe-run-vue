@@ -137,12 +137,25 @@ const theme = ref<'dark' | 'light'>('light')
 
 const isVaporSupported = ref(false)
 const previewOptions = computed(() => ({
-  headHTML: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiVersionList[0]}/lib/style.min.css">`,
+  headHTML: `
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiVersionList[0]}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-table@${tableVersionList[0]}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-design@${designVersionList[0]}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-gantt@${ganttVersionList[0]}/lib/style.min.css">
+  `,
   customCode: {
-    importCode: `import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'
-    import VxeUI from 'vxe-pc-ui'`,
+    importCode: `
+    import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'
+    import VxeUIBase from 'vxe-pc-ui'
+    import VxeUIDesign from 'vxe-design'
+    import VxeUIGantt from 'vxe-gantt'
+    import VxeUITable from 'vxe-table'
+    `,
     useCode: `
-      app.use(VxeUI)
+      app.use(VxeUIBase)
+      app.use(VxeUIDesign)
+      app.use(VxeUIGantt)
+      app.use(VxeUITable)
       ${isVaporSupported.value ? 'app.use(vaporInteropPlugin)' : ''}
       if (window.devtoolsFormatters) {
         const index = window.devtoolsFormatters.findIndex((v) => v.__vue_custom_formatter)
