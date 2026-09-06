@@ -6,10 +6,22 @@
       </template>
     </Header>
     <div class="page-body">
-      <Repl ref="replRef" :theme="theme" :editor="Monaco" @keydown.ctrl.s.prevent @keydown.meta.s.prevent
-        :ssr="useSSRMode" :model-value="autoSave" :editorOptions="{ autoSaveText: false }" :store="store"
-        :showCompileOutput="true" :showSsrOutput="useSSRMode" :showOpenSourceMap="true" :autoResize="true"
-        :clearConsole="false" :preview-options="previewOptions" />
+      <Repl
+        ref="replRef"
+        :theme="theme"
+        :editor="Monaco" :ssr="useSSRMode"
+        :model-value="autoSave"
+        :editor-options="{ autoSaveText: false }"
+        :store="store"
+        :show-compile-output="true"
+        :show-ssr-output="useSSRMode"
+        :show-open-source-map="true"
+        :auto-resize="true"
+        :clear-console="false"
+        :preview-options="previewOptions"
+        @keydown.ctrl.s.prevent
+        @keydown.meta.s.prevent
+      />
     </div>
   </div>
 </template>
@@ -31,7 +43,7 @@ import XEUtils from 'xe-utils'
 
 const createVxeVersionEvent = (name: string) => {
   return {
-    change(_itemParams, eventParams) {
+    change (_itemParams, eventParams) {
       const { value } = eventParams
       store.setImportMap({
         imports: {
@@ -176,6 +188,77 @@ store.setFiles({
   'App.vue': '<template></template>'
 })
 
+interface ParseTemplateObj {
+  code: string
+  content: string
+}
+
+interface ParseScriptObj {
+  lang: string
+  setup: boolean
+  code: string
+  content: string
+}
+
+interface ParseStyleObj {
+  lang: string
+  scoped: boolean
+  code: string
+  content: string
+}
+
+function parseVueWithDOMParser (source: string) {
+  const wrapped = `<root>${source || ''}</root>`
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(wrapped, 'text/html')
+  const templateEl = doc.querySelector('template')
+  const scriptEl = doc.querySelector('script')
+  const styleEl = doc.querySelector('style')
+  const allStyles = doc.querySelectorAll('style')
+  return {
+    template: {
+      code: templateEl ? templateEl.innerHTML : '',
+      content: templateEl ? templateEl.outerHTML : ''
+    },
+    script: {
+      lang: scriptEl ? scriptEl.getAttribute('lang') || 'js' : 'js',
+      setup: scriptEl ? scriptEl.hasAttribute('setup') : false,
+      code: scriptEl ? scriptEl.innerHTML : '',
+      content: scriptEl ? scriptEl.outerHTML : ''
+    },
+    style: {
+      code: styleEl ? styleEl.innerHTML : '',
+      content: styleEl ? styleEl.outerHTML : ''
+    },
+    styles: Array.from(allStyles).map(el => {
+      const styleObj: ParseStyleObj = {
+        lang: el.getAttribute('lang') || 'css',
+        scoped: el.hasAttribute('scoped'),
+        code: el.innerHTML,
+        content: el.outerHTML
+      }
+      return styleObj
+    })
+  }
+}
+
+function reconstructVue (templateObj: ParseTemplateObj, scriptObj: ParseScriptObj, styleObjs: ParseStyleObj[]) {
+  const parts: string[] = []
+  if (templateObj) {
+    parts.push(templateObj.content)
+  }
+  if (scriptObj) {
+    parts.push(scriptObj.content)
+  }
+  if (styleObjs && styleObjs.length > 0) {
+    for (const styleObj of styleObjs) {
+      parts.push(`<style ${styleObj.scoped ? 'scoped' : ''}>\n${styleObj.code}\n</style>`)
+    }
+  }
+
+  return parts.join('\n\n') // 用空行分隔各部分，更美观
+}
+
 /**
  * fiels=TestA.vue@url,TestB.vue@url
  */
@@ -204,6 +287,18 @@ if (searchQuery.files) {
       })
     })
   ).then(() => {
+    const fileRest = parseVueWithDOMParser(newFiles[mainFile])
+    if (fileRest.style) {
+      newFiles[mainFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
+        if (['scss', 'sass'].includes(obj.lang)) {
+          return {
+            ...obj,
+            code: (window as any).compileScss(obj.code)
+          }
+        }
+        return obj
+      }))
+    }
     // 初始化代码
     store.setFiles(newFiles, mainFile)
     VxeUI.loading.close()

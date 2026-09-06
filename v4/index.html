@@ -9,6 +9,10 @@
   </head>
   <body>
     <div id="app"></div>
+    <script type="module">
+      const sass = await import('https://jspm.dev/sass')
+      window.compileScss = (code) => sass.compileString(code).css;
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
