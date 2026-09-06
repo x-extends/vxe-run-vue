@@ -6,23 +6,10 @@
       </template>
     </Header>
     <div class="page-body">
-      <Repl
-        ref="replRef"
-        :theme="theme"
-        :editor="Monaco"
-        @keydown.ctrl.s.prevent
-        @keydown.meta.s.prevent
-        :ssr="useSSRMode"
-        :model-value="autoSave"
-        :editorOptions="{ autoSaveText: false }"
-        :store="store"
-        :showCompileOutput="true"
-        :showSsrOutput="useSSRMode"
-        :showOpenSourceMap="true"
-        :autoResize="true"
-        :clearConsole="false"
-        :preview-options="previewOptions"
-      />
+      <Repl ref="replRef" :theme="theme" :editor="Monaco" @keydown.ctrl.s.prevent @keydown.meta.s.prevent
+        :ssr="useSSRMode" :model-value="autoSave" :editorOptions="{ autoSaveText: false }" :store="store"
+        :showCompileOutput="true" :showSsrOutput="useSSRMode" :showOpenSourceMap="true" :autoResize="true"
+        :clearConsole="false" :preview-options="previewOptions" />
     </div>
   </div>
 </template>
@@ -30,6 +17,9 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { Repl, useStore, SFCOptions, useVueImportMap, mergeImportMap } from '@vue/repl'
+import { useUtilsStore } from './common/utils'
+import { useVueStore } from './common/vue'
+import { useVxeCoreStore } from './common/vxeCore'
 import { useUIStore } from './common/ui'
 import { useTableStore } from './common/table'
 import { useGanttStore } from './common/gantt'
@@ -41,7 +31,7 @@ import XEUtils from 'xe-utils'
 
 const createVxeVersionEvent = (name: string) => {
   return {
-    change (_itemParams, eventParams) {
+    change(_itemParams, eventParams) {
       const { value } = eventParams
       store.setImportMap({
         imports: {
@@ -52,6 +42,9 @@ const createVxeVersionEvent = (name: string) => {
   }
 }
 
+const { utilsVersionList } = useUtilsStore()
+const { vueVersionList } = useVueStore()
+const { vxeCoreVersionList } = useVxeCoreStore()
 const { uiVersionList, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
 const { tableVersionList, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
 const { ganttVersionList, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
@@ -77,10 +70,10 @@ const autoSave = ref(false)
 
 const { productionMode, vueVersion, importMap } = useVueImportMap({
   runtimeDev: import.meta.env.PROD
-    ? `${import.meta.env.VITE_APP_CDN_URL}vue@3.5.16/dist/vue.runtime.esm-browser.js`
+    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueVersionList[0]}/dist/vue.runtime.esm-browser.js`
     : `${location.origin}${import.meta.env.VITE_APP_BASE_PATH}/src/vue-dev-proxy`,
   runtimeProd: import.meta.env.PROD
-    ? `${import.meta.env.VITE_APP_CDN_URL}vue@3.5.16/dist/vue.runtime.esm-browser.prod.js`
+    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueVersionList[0]}/dist/vue.runtime.esm-browser.prod.js`
     : `${location.origin}${import.meta.env.VITE_APP_BASE_PATH}/src/vue-dev-proxy-prod`,
   serverRenderer: import.meta.env.PROD
     ? `${location.origin}/server-renderer.esm-browser.js`
@@ -109,9 +102,9 @@ const sfcOptions = computed(
 
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
-    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@4.0.13/dist/all.esm.js`,
+    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${utilsVersionList[0]}/dist/all.esm.js`,
     'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/dist/all.esm.js`,
-    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@4.4.20/dist/all.esm.js`,
+    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${vxeCoreVersionList}/dist/all.esm.js`,
     'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${uiVersionList[0]}/dist/all.esm.js`,
     'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${tableVersionList[0]}/dist/all.esm.js`,
     'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${designVersionList[0]}/dist/all.esm.js`,
@@ -147,15 +140,15 @@ const previewOptions = computed(() => ({
     importCode: `
     import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'
     import VxeUIBase from 'vxe-pc-ui'
+    import VxeUITable from 'vxe-table'
     import VxeUIDesign from 'vxe-design'
     import VxeUIGantt from 'vxe-gantt'
-    import VxeUITable from 'vxe-table'
     `,
     useCode: `
       app.use(VxeUIBase)
+      app.use(VxeUITable)
       app.use(VxeUIDesign)
       app.use(VxeUIGantt)
-      app.use(VxeUITable)
       ${isVaporSupported.value ? 'app.use(vaporInteropPlugin)' : ''}
       if (window.devtoolsFormatters) {
         const index = window.devtoolsFormatters.findIndex((v) => v.__vue_custom_formatter)
