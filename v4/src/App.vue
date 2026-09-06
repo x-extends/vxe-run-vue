@@ -137,7 +137,7 @@ const theme = ref<'dark' | 'light'>('light')
 
 const isVaporSupported = ref(false)
 const previewOptions = computed(() => ({
-  headHTML: '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@4.13.21/lib/style.min.css">',
+  headHTML: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiVersionList[0]}/lib/style.min.css">`,
   customCode: {
     importCode: `import { initCustomFormatter${isVaporSupported.value ? ', vaporInteropPlugin' : ''} } from 'vue'
     import VxeUI from 'vxe-pc-ui'`,
