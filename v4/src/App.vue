@@ -4,6 +4,7 @@
       <template #middle>
         <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
         <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
+        <vxe-button v-if="playgroundObj && searchQuery.k" icon="vxe-icon-copy" @click="copyUrlEvent">Copy URL</vxe-button>
       </template>
       <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
@@ -444,6 +445,15 @@ const saveEvent = () => {
 
 const forkEvent = () => {
   handleSave(true)
+}
+
+const copyUrlEvent = () => {
+  if (VxeUI.clipboard.copy(location.href)) {
+    VxeUI.modal.message({
+      content: '链接已复制到剪贴板，用于提交 issues 演示的复现链接',
+      status: 'success'
+    })
+  }
 }
 
 init()
