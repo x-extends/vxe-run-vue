@@ -1,7 +1,11 @@
 <template>
   <div class="page-layout">
     <Header>
-      <template #default>
+      <template #middle>
+        <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
+        <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
+      </template>
+      <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
       </template>
     </Header>
@@ -41,6 +45,13 @@ import Monaco from '@vue/repl/monaco-editor'
 import Header from './Header.vue'
 import XEUtils from 'xe-utils'
 
+const playgroundObj = ref<{
+  key: string
+  name: string
+  content: string
+  privilege: boolean
+} | null>(null)
+
 const createVxeVersionEvent = (name: string) => {
   return {
     change (_itemParams, eventParams) {
@@ -69,6 +80,9 @@ const { uiStableVersion, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-u
 const { tableStableVersion, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
 const { ganttStableVersion, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
 const { designStableVersion, designRender } = useDesignStore(createVxeVersionEvent('vxe-design'))
+
+const forkLoading = ref(false)
+const saveLoading = ref(false)
 
 const formOptions = reactive({
   data: {
@@ -193,9 +207,11 @@ const parseFileInfo = (path: string) => {
   }
 }
 
+const mainFile = 'App.vue'
+
 // 初始化代码
 store.setFiles({
-  'App.vue': '<template></template>'
+  ['src/' + mainFile]: '<template></template>'
 })
 
 interface ParseTemplateObj {
@@ -269,49 +285,164 @@ function reconstructVue (templateObj: ParseTemplateObj, scriptObj: ParseScriptOb
   return parts.join('\n\n') // 用空行分隔各部分，更美观
 }
 
+const { searchQuery } = XEUtils.parseUrl(location.href)
+
 /**
  * fiels=TestA.vue@url,TestB.vue@url
  */
-const { searchQuery } = XEUtils.parseUrl(location.href)
-if (searchQuery.files) {
-  VxeUI.loading.open()
-  const filesList: string[] = searchQuery.files.split(',')
-  const newFiles = {}
-  let mainFile = ''
-  Promise.all(
-    filesList.map((item: string) => {
-      const rest = atob(item).split('@')
-      let fileName = decodeURIComponent(rest[0] || '')
-      const fileUrl = decodeURIComponent(rest[1] || '')
-      const fileInfo = parseFileInfo(fileUrl)
-      if (!fileName) {
-        fileName = fileInfo.fullName
+async function init () {
+  if (searchQuery.k) {
+    VxeUI.loading.open()
+    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/find/${searchQuery.k}`, {
+      headers: {
+        token: localStorage.getItem('VXE_RUN_TOKEN') || '',
+        now: `${Date.now()}`
       }
-      if (!mainFile) {
-        mainFile = fileName
-      }
-      newFiles[fileName] = ''
-      return fetch(`${fileUrl}?v=${import.meta.env.VITE_APP_DATE_NOW}`).then(res => res.text()).then(text => {
-        newFiles[fileName] = text
-      }).catch(() => {
-      })
     })
-  ).then(() => {
-    const fileRest = parseVueWithDOMParser(newFiles[mainFile])
-    if (fileRest.style) {
-      newFiles[mainFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
-        if (['scss', 'sass'].includes(obj.lang)) {
-          return {
-            ...obj,
-            code: (window as any).compileScss(obj.code)
-          }
-        }
-        return obj
-      }))
+    if (response.ok) {
+      const data = await response.json()
+      if (data && data.result) {
+        const restObj = data.result
+        const newFiles = {}
+        newFiles['src/' + mainFile] = restObj.content
+        store.setFiles(newFiles, mainFile)
+        playgroundObj.value = restObj
+      } else {
+        playgroundObj.value = null
+        VxeUI.modal.message({
+          content: data.message || '链接已失效',
+          status: 'error'
+        })
+      }
+      VxeUI.loading.close()
+    } else {
+      playgroundObj.value = null
+      VxeUI.modal.message({
+        content: '无效的链接',
+        status: 'error'
+      })
+      VxeUI.loading.close()
     }
-    // 初始化代码
-    store.setFiles(newFiles, mainFile)
-    VxeUI.loading.close()
-  })
+  } else if (searchQuery.files) {
+    VxeUI.loading.open()
+    const filesList: string[] = searchQuery.files.split(',')
+    const newFiles = {}
+    Promise.all(
+      filesList.map((item: string, i) => {
+        const rest = atob(item).split('@')
+        let fileName = decodeURIComponent(rest[0] || '')
+        const fileUrl = decodeURIComponent(rest[1] || '')
+        const fileInfo = parseFileInfo(fileUrl)
+        if (!fileName) {
+          fileName = fileInfo.fullName
+        }
+        if (!i) {
+          fileName = mainFile
+        }
+        newFiles['src/' + fileName] = ''
+        return fetch(`${fileUrl}?v=${import.meta.env.VITE_APP_DATE_NOW}`).then(res => res.text()).then(text => {
+          newFiles['src/' + fileName] = text
+        }).catch(() => {
+        })
+      })
+    ).then(() => {
+      const fileRest = parseVueWithDOMParser(newFiles[mainFile])
+      if (fileRest.style) {
+        newFiles['src/' + mainFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
+          if (['scss', 'sass'].includes(obj.lang)) {
+            return {
+              ...obj,
+              code: (window as any).compileScss(obj.code)
+            }
+          }
+          return obj
+        }))
+      }
+      // 初始化代码
+      store.setFiles(newFiles, mainFile)
+      VxeUI.loading.close()
+    })
+  }
 }
+
+const handleSave = async (isFork?: boolean) => {
+  const fileMaps = store.getFiles()
+  const mainContent = fileMaps[mainFile]
+  if (mainContent && mainContent.length > 5000) {
+    VxeUI.modal.message({
+      content: '代码字符限制 5000 字符内',
+      status: 'error'
+    })
+    return
+  }
+  if (isFork) {
+    forkLoading.value = true
+  } else {
+    saveLoading.value = true
+  }
+  const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/${isFork ? 'fork' : 'save'}`, {
+    method: 'POST',
+    headers: {
+      token: localStorage.getItem('VXE_RUN_TOKEN') || '',
+      now: `${Date.now()}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      key: searchQuery.k,
+      name: mainFile,
+      content: mainContent
+    })
+  })
+  if (response.ok) {
+    const data = await response.json()
+    if (data && data.result) {
+      const restObj = data.result
+      if (isFork) {
+        localStorage.setItem('VXE_RUN_TOKEN', restObj.token)
+        location.search = `?k=${restObj.key}`
+      } else {
+        VxeUI.modal.message({
+          content: 'Save success',
+          status: 'success'
+        })
+      }
+    } else {
+      VxeUI.modal.message({
+        content: data.message || 'Error',
+        status: 'error'
+      })
+    }
+  } else {
+    VxeUI.modal.message({
+      content: 'Error unauthorized',
+      status: 'error'
+    })
+  }
+  if (isFork) {
+    forkLoading.value = false
+  } else {
+    saveLoading.value = false
+  }
+}
+
+const saveEvent = () => {
+  handleSave()
+}
+
+const forkEvent = () => {
+  handleSave(true)
+}
+
+init()
 </script>
+
+<style>
+.vue-repl {
+  .file-selector {
+    .add,
+    .import-map-wrapper {
+      display: none;
+    }
+  }
+}
+</style>

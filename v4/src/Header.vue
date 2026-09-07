@@ -5,10 +5,15 @@
         <img src="https://vxeui.com/logo.png">
         <span class="title">Vxe UI</span>
       </a>
+      <a class="pendant" :href="`https://github.com/x-extends/vxe-table`">
+        <img :src="`https://img.shields.io/github/stars/x-extends/vxe-table.svg`">
+      </a>
     </div>
-    <div class="header-middle"></div>
+    <div class="header-middle">
+      <slot name="middle"></slot>
+    </div>
     <div class="header-right">
-      <slot></slot>
+      <slot name="right"></slot>
     </div>
   </div>
 </template>
@@ -35,12 +40,13 @@
   }
   .header-middle {
     flex-grow: 1;
+    text-align: center;
   }
   .header-left {
     padding: 0 16px;
     .logo {
       text-decoration: none;
-      color: var(--vxe-ui-font-primary-color);
+      color: var(--vxe-ui-font-color);
       padding: 0 0.4em;
       font-weight: 700;
       font-size: 18px;
@@ -55,9 +61,6 @@
         display: inline-block;
         vertical-align: middle;
       }
-    }
-    .pendant {
-      display: none;
     }
   }
 }
