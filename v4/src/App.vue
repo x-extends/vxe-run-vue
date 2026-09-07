@@ -1,10 +1,10 @@
 <template>
   <div class="page-layout">
     <Header>
-      <template #middle>
+      <!-- <template #middle>
         <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
         <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
-      </template>
+      </template> -->
       <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
       </template>
@@ -380,41 +380,48 @@ const handleSave = async (isFork?: boolean) => {
   } else {
     saveLoading.value = true
   }
-  const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/${isFork ? 'fork' : 'save'}`, {
-    method: 'POST',
-    headers: {
-      token: localStorage.getItem('VXE_RUN_TOKEN') || '',
-      now: `${Date.now()}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      key: searchQuery.k,
-      name: mainFile,
-      content: mainContent
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/${isFork ? 'fork' : 'save'}`, {
+      method: 'POST',
+      headers: {
+        token: localStorage.getItem('VXE_RUN_TOKEN') || '',
+        now: `${Date.now()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        key: searchQuery.k,
+        name: mainFile,
+        content: mainContent
+      })
     })
-  })
-  if (response.ok) {
-    const data = await response.json()
-    if (data && data.result) {
-      const restObj = data.result
-      if (isFork) {
-        localStorage.setItem('VXE_RUN_TOKEN', restObj.token)
-        location.search = `?k=${restObj.key}`
+    if (response.ok) {
+      const data = await response.json()
+      if (data && data.result) {
+        const restObj = data.result
+        if (isFork) {
+          localStorage.setItem('VXE_RUN_TOKEN', restObj.token)
+          location.search = `?k=${restObj.key}`
+        } else {
+          VxeUI.modal.message({
+            content: 'Save success',
+            status: 'success'
+          })
+        }
       } else {
         VxeUI.modal.message({
-          content: 'Save success',
-          status: 'success'
+          content: data.message || 'Error',
+          status: 'error'
         })
       }
     } else {
       VxeUI.modal.message({
-        content: data.message || 'Error',
+        content: 'Error unauthorized',
         status: 'error'
       })
     }
-  } else {
+  } catch (e) {
     VxeUI.modal.message({
-      content: 'Error unauthorized',
+      content: 'Error',
       status: 'error'
     })
   }
