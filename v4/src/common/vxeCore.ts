@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 
 export function useVxeCoreStore (events?: any) {
   const vxeCoreVersionList = ['4.4.20']
+  const vxeCoreStableVersion = vxeCoreVersionList[0]
   const vxeCoreVersionOptions = vxeCoreVersionList.map(v => ({ label: v, value: v }))
   const vxeCoreRender = reactive({
     name: 'VxeSelect',
@@ -14,6 +15,7 @@ export function useVxeCoreStore (events?: any) {
 
   return {
     vxeCoreVersionList,
+    vxeCoreStableVersion,
     vxeCoreRender
   }
 }

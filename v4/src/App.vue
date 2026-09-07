@@ -62,21 +62,21 @@ const createVxeVersionEvent = (name: string) => {
   }
 }
 
-const { utilsVersionList } = useUtilsStore()
-const { vueVersionList, vueRender } = useVueStore(createVxeVersionEvent('vue'))
-const { vxeCoreVersionList } = useVxeCoreStore()
-const { uiVersionList, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
-const { tableVersionList, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
-const { ganttVersionList, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
-const { designVersionList, designRender } = useDesignStore(createVxeVersionEvent('vxe-design'))
+const { utilsStableVersion } = useUtilsStore()
+const { vueStableVersion, vueRender } = useVueStore(createVxeVersionEvent('vue'))
+const { vxeCoreStableVersion } = useVxeCoreStore()
+const { uiStableVersion, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
+const { tableStableVersion, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
+const { ganttStableVersion, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
+const { designStableVersion, designRender } = useDesignStore(createVxeVersionEvent('vxe-design'))
 
 const formOptions = reactive({
   data: {
-    selectVueVersion: vueVersionList[0],
-    selectDesignVersion: designVersionList[0],
-    selectGanttVersion: ganttVersionList[0],
-    selectTableVersion: tableVersionList[0],
-    selectUIVersion: uiVersionList[0]
+    selectVueVersion: vueStableVersion,
+    selectDesignVersion: designStableVersion,
+    selectGanttVersion: ganttStableVersion,
+    selectTableVersion: tableStableVersion,
+    selectUIVersion: uiStableVersion
   },
   items: [
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
@@ -92,10 +92,10 @@ const autoSave = ref(false)
 
 const { productionMode, vueVersion, importMap } = useVueImportMap({
   runtimeDev: import.meta.env.PROD
-    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueVersionList[0]}/dist/vue.runtime.esm-browser.js`
+    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueStableVersion}/dist/vue.runtime.esm-browser.js`
     : `${location.origin}${import.meta.env.VITE_APP_BASE_PATH}/src/vue-dev-proxy`,
   runtimeProd: import.meta.env.PROD
-    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueVersionList[0]}/dist/vue.runtime.esm-browser.prod.js`
+    ? `${import.meta.env.VITE_APP_CDN_URL}vue@${vueStableVersion}/dist/vue.runtime.esm-browser.prod.js`
     : `${location.origin}${import.meta.env.VITE_APP_BASE_PATH}/src/vue-dev-proxy-prod`,
   serverRenderer: import.meta.env.PROD
     ? `${location.origin}/server-renderer.esm-browser.js`
@@ -124,13 +124,13 @@ const sfcOptions = computed(
 
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
-    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${utilsVersionList[0]}/dist/all.esm.js`,
+    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${utilsStableVersion}/dist/all.esm.js`,
     'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/dist/all.esm.js`,
-    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${vxeCoreVersionList}/dist/all.esm.js`,
-    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${uiVersionList[0]}/dist/all.esm.js`,
-    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${tableVersionList[0]}/dist/all.esm.js`,
-    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${designVersionList[0]}/dist/all.esm.js`,
-    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${ganttVersionList[0]}/dist/all.esm.js`,
+    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${vxeCoreStableVersion}/dist/all.esm.js`,
+    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${uiStableVersion}/dist/all.esm.js`,
+    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${tableStableVersion}/dist/all.esm.js`,
+    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${designStableVersion}/dist/all.esm.js`,
+    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${ganttStableVersion}/dist/all.esm.js`,
     axios: `${import.meta.env.VITE_APP_CDN_URL}axios@1.7.2/esm/axios.min.js`
   }
 }))
@@ -153,10 +153,10 @@ const theme = ref<'dark' | 'light'>('light')
 const isVaporSupported = ref(false)
 const previewOptions = computed(() => ({
   headHTML: `
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiVersionList[0]}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-table@${tableVersionList[0]}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-design@${designVersionList[0]}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-gantt@${ganttVersionList[0]}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiStableVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-table@${tableStableVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-design@${designStableVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-gantt@${ganttStableVersion}/lib/style.min.css">
   `,
   customCode: {
     importCode: `
