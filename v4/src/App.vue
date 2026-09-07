@@ -293,36 +293,42 @@ const { searchQuery } = XEUtils.parseUrl(location.href)
 async function init () {
   if (searchQuery.k) {
     VxeUI.loading.open()
-    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/storeapi/api/playground/find/${searchQuery.k}`, {
-      headers: {
-        token: localStorage.getItem('VXE_RUN_TOKEN') || '',
-        now: `${Date.now()}`
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
-      if (data && data.result) {
-        const restObj = data.result
-        const newFiles = {}
-        newFiles['src/' + mainFile] = restObj.content
-        store.setFiles(newFiles, mainFile)
-        playgroundObj.value = restObj
+    try {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/storeapi/api/playground/find/${searchQuery.k}`, {
+        headers: {
+          token: localStorage.getItem('VXE_RUN_TOKEN') || '',
+          now: `${Date.now()}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data && data.result) {
+          const restObj = data.result
+          const newFiles = {}
+          newFiles['src/' + mainFile] = restObj.content
+          store.setFiles(newFiles, mainFile)
+          playgroundObj.value = restObj
+        } else {
+          playgroundObj.value = null
+          VxeUI.modal.message({
+            content: data.message || '链接已失效',
+            status: 'error'
+          })
+        }
       } else {
         playgroundObj.value = null
         VxeUI.modal.message({
-          content: data.message || '链接已失效',
+          content: '无效的链接',
           status: 'error'
         })
       }
-      VxeUI.loading.close()
-    } else {
-      playgroundObj.value = null
+    } catch (e) {
       VxeUI.modal.message({
-        content: '无效的链接',
+        content: '错误',
         status: 'error'
       })
-      VxeUI.loading.close()
     }
+    VxeUI.loading.close()
   } else if (searchQuery.files) {
     VxeUI.loading.open()
     const filesList: string[] = searchQuery.files.split(',')
