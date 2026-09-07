@@ -15,7 +15,7 @@ const isForceAd = false
 
 const adVariable = {
   VXE_AD_WRAPPER_ID: XEUtils.sample('qazxswedcvfrtgbnhyujmkiolp0123456789'.split(''), 18).join(''),
-  VXE_AD_WRAPPER_STYLE: `position: fixed !important;right: 20px !important;bottom: 0px !important;width: 240px !important;padding: 0 !important;margin: 0 !important;z-index: 99 !important;display: block !important;text-align: left !important;`,
+  VXE_AD_WRAPPER_STYLE: `position: fixed !important;right: 0 !important;bottom: 0px !important;width: 240px !important;padding: 0 !important;margin: 0 !important;z-index: 99 !important;display: block !important;text-align: left !important;`,
   VXE_AD_SPONSOR_ID: XEUtils.sample('qazxswedcvfrtgbnhyujmkiolp0123456789'.split(''), 16).join(''),
   VXE_AD_WWADS_STYLE: 'max-width: 200px !important;visibility: visible !important;display: block !important;'
 }
