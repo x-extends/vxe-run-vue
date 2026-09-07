@@ -80,7 +80,7 @@ const { vxeCoreStableVersion } = useVxeCoreStore()
 const { uiStableVersion, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
 const { tableStableVersion, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
 const { ganttStableVersion, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
-const { designStableVersion, designRender } = useDesignStore(createVxeVersionEvent('vxe-design'))
+const { designStableVersion } = useDesignStore(createVxeVersionEvent('vxe-design'))
 
 const forkLoading = ref(false)
 const saveLoading = ref(false)
@@ -97,8 +97,8 @@ const formOptions = reactive({
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
     { field: 'selectUIVersion', title: 'vxe-pc-ui', itemRender: uiRender },
     { field: 'selectTableVersion', title: 'vxe-table', itemRender: tableRender },
-    { field: 'selectGanttVersion', title: 'vxe-gantt', itemRender: ganttRender },
-    { field: 'selectDesignVersion', title: 'vxe-design', itemRender: designRender }
+    { field: 'selectGanttVersion', title: 'vxe-gantt', itemRender: ganttRender }
+    // { field: 'selectDesignVersion', title: 'vxe-design', itemRender: designRender }
   ]
 })
 

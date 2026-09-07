@@ -8,7 +8,7 @@ export function useVueStore (events?: any) {
     name: 'VxeSelect',
     options: vueVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })

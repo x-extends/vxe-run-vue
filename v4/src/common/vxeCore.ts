@@ -8,7 +8,7 @@ export function useVxeCoreStore (events?: any) {
     name: 'VxeSelect',
     options: vxeCoreVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })

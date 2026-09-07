@@ -8,7 +8,7 @@ export function useDesignStore (events?: any) {
     name: 'VxeSelect',
     options: designVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })

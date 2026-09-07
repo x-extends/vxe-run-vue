@@ -8,7 +8,7 @@ export function useGanttStore (events?: any) {
     name: 'VxeSelect',
     options: ganttVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })

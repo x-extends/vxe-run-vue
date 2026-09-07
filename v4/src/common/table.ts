@@ -8,7 +8,7 @@ export function useTableStore (events?: any) {
     name: 'VxeSelect',
     options: tableVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })

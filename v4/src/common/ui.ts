@@ -8,7 +8,7 @@ export function useUIStore (events?: any) {
     name: 'VxeSelect',
     options: uiVersionOptions,
     props: {
-      width: 100
+      width: 90
     },
     events
   })
