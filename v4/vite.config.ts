@@ -39,7 +39,19 @@ export default defineConfig(({ mode, command }) => {
     server: {
       host: '0.0.0.0',
       allowedHosts: true,
-      port: Number(env.VITE_APP_SERVER_PORT)
+      port: Number(env.VITE_APP_SERVER_PORT),
+      proxy: {
+        '/storeapi': {
+          target: 'http://localhost:21000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/storeapi/, '')
+        },
+        '/baseapi': {
+          target: 'http://localhost:22000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/baseapi/, '')
+        }
+      }
     },
     build: {
       sourcemap: command === 'build' ? false : 'inline',
