@@ -346,7 +346,7 @@ async function init () {
         })
       })
     ).then(() => {
-      const fileRest = parseVueWithDOMParser(newFiles[mainFile])
+      const fileRest = parseVueWithDOMParser(newFiles['src/' + mainFile])
       if (fileRest.style) {
         newFiles['src/' + mainFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
           if (['scss', 'sass'].includes(obj.lang)) {
