@@ -46,30 +46,44 @@ import Monaco from '@vue/repl/monaco-editor'
 import Header from './Header.vue'
 import XEUtils from 'xe-utils'
 
-const playgroundObj = ref<{
+interface PlaygroundVO {
   key: string
   name: string
   content: string
   privilege: boolean
-} | null>(null)
+  utilsVersion: string
+  vueVersion: string
+  coreVersion: string
+  uiVersion: string
+  tableVersion: string
+  ganttVersion: string
+  designVersion: string
+}
+
+const playgroundObj = ref<PlaygroundVO | null>(null)
+
+const setEsmUrl = (name: string, version: string) => {
+  if (!name || !version) {
+    return
+  }
+  let esmUrl: string
+  if (name === 'vue') {
+    esmUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${version}/dist/vue.runtime.esm-browser.prod.js`
+  } else {
+    esmUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${version}/dist/all.esm.js`
+  }
+  store.setImportMap({
+    imports: {
+      [name]: esmUrl
+    }
+  }, true)
+}
 
 const createVxeVersionEvent = (name: string) => {
   return {
     change (_itemParams, eventParams) {
       const { value } = eventParams
-      let esUrl: string
-      if (name === 'vue') {
-        esUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/vue.runtime.esm-browser.prod.js`
-      } else {
-        esUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/all.esm.js`
-      }
-      if (esUrl) {
-        store.setImportMap({
-          imports: {
-            [name]: esUrl
-          }
-        }, true)
-      }
+      setEsmUrl(name, value)
     }
   }
 }
@@ -87,11 +101,13 @@ const saveLoading = ref(false)
 
 const formOptions = reactive({
   data: {
+    selectUtilsVersion: utilsStableVersion,
     selectVueVersion: vueStableVersion,
-    selectDesignVersion: designStableVersion,
-    selectGanttVersion: ganttStableVersion,
+    selectCoreVersion: vxeCoreStableVersion,
+    selectUIVersion: uiStableVersion,
     selectTableVersion: tableStableVersion,
-    selectUIVersion: uiStableVersion
+    selectGanttVersion: ganttStableVersion,
+    selectDesignVersion: designStableVersion
   },
   items: [
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
@@ -139,13 +155,13 @@ const sfcOptions = computed(
 
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
-    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${utilsStableVersion}/dist/all.esm.js`,
+    'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${formOptions.data.selectUtilsVersion}/dist/all.esm.js`,
     'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/dist/all.esm.js`,
-    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${vxeCoreStableVersion}/dist/all.esm.js`,
-    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${uiStableVersion}/dist/all.esm.js`,
-    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${tableStableVersion}/dist/all.esm.js`,
-    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${designStableVersion}/dist/all.esm.js`,
-    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${ganttStableVersion}/dist/all.esm.js`,
+    '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${formOptions.data.selectCoreVersion}/dist/all.esm.js`,
+    'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${formOptions.data.selectUIVersion}/dist/all.esm.js`,
+    'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${formOptions.data.selectTableVersion}/dist/all.esm.js`,
+    'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${formOptions.data.selectDesignVersion}/dist/all.esm.js`,
+    'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${formOptions.data.selectGanttVersion}/dist/all.esm.js`,
     axios: `${import.meta.env.VITE_APP_CDN_URL}axios@1.7.2/esm/axios.min.js`
   }
 }))
@@ -168,10 +184,10 @@ const theme = ref<'dark' | 'light'>('light')
 const isVaporSupported = ref(false)
 const previewOptions = computed(() => ({
   headHTML: `
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${uiStableVersion}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-table@${tableStableVersion}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-design@${designStableVersion}/lib/style.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-gantt@${ganttStableVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-pc-ui@${formOptions.data.selectUIVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-table@${formOptions.data.selectTableVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-design@${formOptions.data.selectDesignVersion}/lib/style.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vxe-gantt@${formOptions.data.selectGanttVersion}/lib/style.min.css">
   `,
   customCode: {
     importCode: `
@@ -304,9 +320,39 @@ async function init () {
       if (response.ok) {
         const data = await response.json()
         if (data && data.result) {
-          const restObj = data.result
+          const restObj: PlaygroundVO = data.result
           const newFiles = {}
           newFiles['src/' + mainFile] = restObj.content
+
+          if (restObj.utilsVersion) {
+            formOptions.data.selectUtilsVersion = restObj.utilsVersion
+            setEsmUrl('xe-utils', restObj.utilsVersion)
+          }
+          if (restObj.vueVersion) {
+            formOptions.data.selectVueVersion = restObj.vueVersion
+            setEsmUrl('vue', restObj.vueVersion)
+          }
+          if (restObj.coreVersion) {
+            formOptions.data.selectCoreVersion = restObj.coreVersion
+            setEsmUrl('core', restObj.coreVersion)
+          }
+          if (restObj.uiVersion) {
+            formOptions.data.selectUIVersion = restObj.uiVersion
+            setEsmUrl('vxe-pc-ui', restObj.uiVersion)
+          }
+          if (restObj.tableVersion) {
+            formOptions.data.selectTableVersion = restObj.tableVersion
+            setEsmUrl('vxe-table', restObj.tableVersion)
+          }
+          if (restObj.ganttVersion) {
+            formOptions.data.selectGanttVersion = restObj.ganttVersion
+            setEsmUrl('vxe-gantt', restObj.ganttVersion)
+          }
+          if (restObj.designVersion) {
+            formOptions.data.selectDesignVersion = restObj.designVersion
+            setEsmUrl('vxe-design', restObj.designVersion)
+          }
+
           store.setFiles(newFiles, mainFile)
           playgroundObj.value = restObj
         } else {
@@ -398,7 +444,14 @@ const handleSave = async (isFork?: boolean) => {
       body: JSON.stringify({
         key: searchQuery.k,
         name: mainFile,
-        content: mainContent
+        content: mainContent,
+        utilsVersion: formOptions.data.selectUtilsVersion,
+        vueVersion: formOptions.data.selectVueVersion,
+        coreVersion: formOptions.data.selectCoreVersion,
+        uiVersion: formOptions.data.selectUIVersion,
+        tableVersion: formOptions.data.selectTableVersion,
+        ganttVersion: formOptions.data.selectGanttVersion,
+        designVersion: formOptions.data.selectDesignVersion
       })
     })
     if (response.ok) {
