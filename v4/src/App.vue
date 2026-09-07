@@ -45,17 +45,25 @@ const createVxeVersionEvent = (name: string) => {
   return {
     change (_itemParams, eventParams) {
       const { value } = eventParams
-      store.setImportMap({
-        imports: {
-          [name]: `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/all.esm.js`
-        }
-      }, true)
+      let esUrl: string
+      if (name === 'vue') {
+        esUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/vue.runtime.esm-browser.prod.js`
+      } else {
+        esUrl = `${import.meta.env.VITE_APP_CDN_URL}${name}@${value}/dist/all.esm.js`
+      }
+      if (esUrl) {
+        store.setImportMap({
+          imports: {
+            [name]: esUrl
+          }
+        }, true)
+      }
     }
   }
 }
 
 const { utilsVersionList } = useUtilsStore()
-const { vueVersionList } = useVueStore()
+const { vueVersionList, vueRender } = useVueStore(createVxeVersionEvent('vue'))
 const { vxeCoreVersionList } = useVxeCoreStore()
 const { uiVersionList, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
 const { tableVersionList, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
@@ -64,12 +72,14 @@ const { designVersionList, designRender } = useDesignStore(createVxeVersionEvent
 
 const formOptions = reactive({
   data: {
+    selectVueVersion: vueVersionList[0],
     selectDesignVersion: designVersionList[0],
     selectGanttVersion: ganttVersionList[0],
     selectTableVersion: tableVersionList[0],
     selectUIVersion: uiVersionList[0]
   },
   items: [
+    { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
     { field: 'selectUIVersion', title: 'vxe-pc-ui', itemRender: uiRender },
     { field: 'selectTableVersion', title: 'vxe-table', itemRender: tableRender },
     { field: 'selectGanttVersion', title: 'vxe-gantt', itemRender: ganttRender },

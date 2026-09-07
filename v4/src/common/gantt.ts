@@ -6,6 +6,9 @@ export function useGanttStore (events?: any) {
   const ganttRender = reactive({
     name: 'VxeSelect',
     options: ganttVersionOptions,
+    props: {
+      width: 100
+    },
     events
   })
 

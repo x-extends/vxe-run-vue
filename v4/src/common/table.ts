@@ -6,6 +6,9 @@ export function useTableStore (events?: any) {
   const tableRender = reactive({
     name: 'VxeSelect',
     options: tableVersionOptions,
+    props: {
+      width: 100
+    },
     events
   })
 

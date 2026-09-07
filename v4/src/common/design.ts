@@ -6,6 +6,9 @@ export function useDesignStore (events?: any) {
   const designRender = reactive({
     name: 'VxeSelect',
     options: designVersionOptions,
+    props: {
+      width: 100
+    },
     events
   })
 
