@@ -1,10 +1,10 @@
 <template>
   <div class="page-layout">
     <Header>
-      <!-- <template #middle>
+      <template #middle>
         <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
         <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
-      </template> -->
+      </template>
       <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
       </template>
@@ -293,7 +293,7 @@ const { searchQuery } = XEUtils.parseUrl(location.href)
 async function init () {
   if (searchQuery.k) {
     VxeUI.loading.open()
-    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/find/${searchQuery.k}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/storeapi/api/playground/find/${searchQuery.k}`, {
       headers: {
         token: localStorage.getItem('VXE_RUN_TOKEN') || '',
         now: `${Date.now()}`
@@ -381,7 +381,7 @@ const handleSave = async (isFork?: boolean) => {
     saveLoading.value = true
   }
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/api/playground/${isFork ? 'fork' : 'save'}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_SERVEICE_API_URL}/storeapi/api/playground/${isFork ? 'fork' : 'save'}`, {
       method: 'POST',
       headers: {
         token: localStorage.getItem('VXE_RUN_TOKEN') || '',
