@@ -5,6 +5,7 @@
         <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
         <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
         <vxe-button v-if="playgroundObj && searchQuery.k" icon="vxe-icon-copy" @click="copyUrlEvent">Copy URL</vxe-button>
+        <vxe-link v-if="showeNewWinBtn" icon="vxe-icon-send" style="margin-left: 12px;" @click="openUrlEvent">新窗口打开</vxe-link>
       </template>
       <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
@@ -59,6 +60,8 @@ interface PlaygroundVO {
   ganttVersion: string
   designVersion: string
 }
+
+const showeNewWinBtn = ref(self !== top)
 
 const playgroundObj = ref<PlaygroundVO | null>(null)
 
@@ -507,6 +510,10 @@ const copyUrlEvent = () => {
       status: 'success'
     })
   }
+}
+
+const openUrlEvent = () => {
+  open(location.href)
 }
 
 init()
