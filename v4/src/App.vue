@@ -270,7 +270,7 @@ function parseVueWithDOMParser (source: string) {
       lang: scriptEl ? scriptEl.getAttribute('lang') || 'js' : 'js',
       setup: scriptEl ? scriptEl.hasAttribute('setup') : false,
       code: scriptEl ? scriptEl.innerHTML : '',
-      content: scriptEl ? scriptEl.outerHTML : ''
+      content: scriptEl ? scriptEl.outerHTML.replace('setup=""', 'setup') : ''
     },
     style: {
       code: styleEl ? styleEl.innerHTML : '',
