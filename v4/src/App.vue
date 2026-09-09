@@ -122,7 +122,7 @@ const formOptions = reactive({
 })
 
 const useSSRMode = ref(false)
-const autoSave = ref(false)
+const autoSave = ref(true)
 
 const { productionMode, vueVersion, importMap } = useVueImportMap({
   runtimeDev: import.meta.env.PROD
