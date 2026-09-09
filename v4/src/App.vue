@@ -464,11 +464,6 @@ const handleSave = async (isFork?: boolean) => {
         if (isFork) {
           localStorage.setItem('VXE_RUN_TOKEN', restObj.token)
           location.search = `?k=${restObj.key}`
-        } else {
-          VxeUI.modal.message({
-            content: 'Save success',
-            status: 'success'
-          })
         }
       } else {
         VxeUI.modal.message({
