@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
 
 export function useTableStore (events?: any) {
-  const tableVersionList = ['4.21.10', '4.21.9', '4.21.8', '4.21.7', '4.20.13', '4.19.25']
-  const tableStableVersion = '4.21.8'
+  const tableVersionList = ['4.22.0-beta.0', '4.21.10', '4.21.9', '4.21.8', '4.21.7', '4.20.13', '4.19.25']
+  const tableStableVersion = '4.21.10'
   const tableVersionOptions = tableVersionList.map(v => ({ label: v, value: v }))
   const tableRender = reactive({
     name: 'VxeSelect',
