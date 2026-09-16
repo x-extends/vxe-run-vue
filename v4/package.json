@@ -30,7 +30,7 @@
     "@vue/tsconfig": "^0.9.1",
     "@vue/repl": "^4.7.2",
     "del": "~6.0.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.10.0",
     "eslint-config-flat": "^1.0.0",
     "eslint-plugin-vue": "^10.10.0",
     "globals": "^17.11.0",
