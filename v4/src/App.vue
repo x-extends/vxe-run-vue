@@ -42,6 +42,7 @@ import { useUIStore } from './common/ui'
 import { useTableStore } from './common/table'
 import { useGanttStore } from './common/gantt'
 import { useDesignStore } from './common/design'
+import { defaultMainTemplate } from './common/tmpl'
 import { VxeUI } from 'vxe-pc-ui'
 import Monaco from '@vue/repl/monaco-editor'
 import Header from './Header.vue'
@@ -49,8 +50,10 @@ import XEUtils from 'xe-utils'
 
 interface PlaygroundVO {
   key: string
-  name: string
-  content: string
+  mainName: string
+  mainContent: string
+  demoName: string
+  demoContent: string
   privilege: boolean
   utilsVersion: string
   vueVersion: string
@@ -229,6 +232,7 @@ const parseFileInfo = (path: string) => {
 }
 
 const mainFile = 'App.vue'
+const demoFile = 'Demo1.vue'
 
 // 初始化代码
 store.setFiles({
@@ -326,7 +330,8 @@ async function init () {
         if (data && data.result) {
           const restObj: PlaygroundVO = data.result
           const newFiles = {}
-          newFiles['src/' + mainFile] = restObj.content
+          newFiles['src/' + mainFile] = restObj.mainContent
+          newFiles['src/' + demoFile] = restObj.demoContent
 
           if (restObj.utilsVersion) {
             formOptions.data.selectUtilsVersion = restObj.utilsVersion
@@ -356,7 +361,6 @@ async function init () {
             formOptions.data.selectDesignVersion = restObj.designVersion
             setEsmUrl('vxe-design', restObj.designVersion)
           }
-
           store.setFiles(newFiles, mainFile)
           playgroundObj.value = restObj
         } else {
@@ -384,7 +388,8 @@ async function init () {
     VxeUI.loading.open()
     const filesList: string[] = searchQuery.files.split(',')
     const newFiles = {}
-    Promise.all(
+    newFiles['src/' + mainFile] = defaultMainTemplate
+    await Promise.all(
       filesList.map((item: string, i) => {
         const rest = atob(item).split('@')
         let fileName = decodeURIComponent(rest[0] || '')
@@ -394,7 +399,7 @@ async function init () {
           fileName = fileInfo.fullName
         }
         if (!i) {
-          fileName = mainFile
+          fileName = demoFile
         }
         newFiles['src/' + fileName] = ''
         return fetch(`${fileUrl}?v=${import.meta.env.VITE_APP_DATE_NOW}`).then(res => res.text()).then(text => {
@@ -402,30 +407,38 @@ async function init () {
         }).catch(() => {
         })
       })
-    ).then(() => {
-      const fileRest = parseVueWithDOMParser(newFiles['src/' + mainFile])
-      if (fileRest.style) {
-        newFiles['src/' + mainFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
-          if (['scss', 'sass'].includes(obj.lang)) {
-            return {
-              ...obj,
-              code: (window as any).compileScss(obj.code)
-            }
+    )
+    const fileRest = parseVueWithDOMParser(newFiles['src/' + demoFile])
+    if (fileRest.style) {
+      newFiles['src/' + demoFile] = reconstructVue(fileRest.template, fileRest.script, fileRest.styles.map(obj => {
+        if (['scss', 'sass'].includes(obj.lang)) {
+          return {
+            ...obj,
+            code: (window as any).compileScss(obj.code)
           }
-          return obj
-        }))
-      }
-      // 初始化代码
-      store.setFiles(newFiles, mainFile)
-      VxeUI.loading.close()
-    })
+        }
+        return obj
+      }))
+    }
+    // 初始化代码
+    await store.setFiles(newFiles, mainFile)
+    // store.setActive('src/' + demoFile)
+    VxeUI.loading.close()
   }
 }
 
 const handleSave = async (isFork?: boolean) => {
   const fileMaps = store.getFiles()
   const mainContent = fileMaps[mainFile]
+  const demoContent = fileMaps[demoFile]
   if (mainContent && mainContent.length > 5000) {
+    VxeUI.modal.message({
+      content: '代码字符限制 5000 字符内',
+      status: 'error'
+    })
+    return
+  }
+  if (demoContent && demoContent.length > 5000) {
     VxeUI.modal.message({
       content: '代码字符限制 5000 字符内',
       status: 'error'
@@ -447,8 +460,10 @@ const handleSave = async (isFork?: boolean) => {
       },
       body: JSON.stringify({
         key: searchQuery.k,
-        name: mainFile,
-        content: mainContent,
+        mainName: mainFile,
+        mainContent: mainContent,
+        demoName: demoFile,
+        demoContent: demoContent,
         utilsVersion: formOptions.data.selectUtilsVersion,
         vueVersion: formOptions.data.selectVueVersion,
         coreVersion: formOptions.data.selectCoreVersion,
