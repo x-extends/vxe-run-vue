@@ -96,7 +96,7 @@ const createVxeVersionEvent = (name: string) => {
 
 const { utilsStableVersion, utilsRender } = useUtilsStore()
 const { vueStableVersion, vueRender } = useVueStore(createVxeVersionEvent('vue'))
-const { vxeCoreStableVersion } = useVxeCoreStore()
+const { vxeCoreStableVersion, vxeCoreRender } = useVxeCoreStore()
 const { uiStableVersion, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
 const { tableStableVersion, tableRender } = useTableStore(createVxeVersionEvent('vxe-table'))
 const { ganttStableVersion, ganttRender } = useGanttStore(createVxeVersionEvent('vxe-gantt'))
@@ -118,6 +118,7 @@ const formOptions = reactive({
   items: [
     { field: 'selectUtilsVersion', title: 'xe-utils', itemRender: utilsRender },
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
+    { field: 'selectCoreVersion', title: 'core', itemRender: vxeCoreRender },
     { field: 'selectUIVersion', title: 'vxe-pc-ui', itemRender: uiRender },
     { field: 'selectTableVersion', title: 'vxe-table', itemRender: tableRender },
     { field: 'selectGanttVersion', title: 'vxe-gantt', itemRender: ganttRender }
