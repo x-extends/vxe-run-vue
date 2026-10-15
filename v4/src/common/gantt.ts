@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 
 export function useGanttStore (events?: any) {
   const ganttVersionList = ['4.9.0-beta.0', '4.8.1', '4.8.0', '4.7.4', '4.7.3', '4.7.2', '4.6.10']
-  const ganttStableVersion = ganttVersionList[0]
+  const ganttStableVersion = '4.8.1'
   const ganttVersionOptions = ganttVersionList.map(v => ({ label: v, value: v }))
   const ganttRender = reactive({
     name: 'VxeSelect',
