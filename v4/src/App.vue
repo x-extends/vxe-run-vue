@@ -116,12 +116,12 @@ const formOptions = reactive({
     selectDesignVersion: designStableVersion
   },
   items: [
-    { field: 'selectUtilsVersion', title: 'xe-utils', itemRender: utilsRender },
+    { field: 'selectUtilsVersion', title: 'xe utils', itemRender: utilsRender },
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
-    { field: 'selectCoreVersion', title: 'core', itemRender: vxeCoreRender },
-    { field: 'selectUIVersion', title: 'vxe-pc-ui', itemRender: uiRender },
-    { field: 'selectTableVersion', title: 'vxe-table', itemRender: tableRender },
-    { field: 'selectGanttVersion', title: 'vxe-gantt', itemRender: ganttRender }
+    { field: 'selectCoreVersion', title: 'vxe core', itemRender: vxeCoreRender },
+    { field: 'selectUIVersion', title: 'vxe ui', itemRender: uiRender },
+    { field: 'selectTableVersion', title: 'vxe table', itemRender: tableRender },
+    { field: 'selectGanttVersion', title: 'vxe gantt', itemRender: ganttRender }
     // { field: 'selectDesignVersion', title: 'vxe-design', itemRender: designRender }
   ]
 })
