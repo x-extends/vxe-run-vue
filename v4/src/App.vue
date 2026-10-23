@@ -90,6 +90,7 @@ const createVxeVersionEvent = (name: string) => {
     change (_itemParams, eventParams) {
       const { value } = eventParams
       setEsmUrl(name, value)
+      checkNewVersion()
     }
   }
 }
@@ -313,6 +314,14 @@ function reconstructVue (templateObj: ParseTemplateObj, scriptObj: ParseScriptOb
 
 const { searchQuery } = XEUtils.parseUrl(location.href)
 
+function checkNewVersion () {
+  utilsRender.props.showBadge = utilsLatestVersion !== formOptions.data.selectUtilsVersion
+  vxeCoreRender.props.showBadge = vxeCoreLatestVersion !== formOptions.data.selectCoreVersion
+  uiRender.props.showBadge = uiLatestVersion !== formOptions.data.selectUIVersion
+  tableRender.props.showBadge = tableLatestVersion !== formOptions.data.selectTableVersion
+  ganttRender.props.showBadge = ganttLatestVersion !== formOptions.data.selectGanttVersion
+}
+
 /**
  * fiels=TestA.vue@url,TestB.vue@url
  */
@@ -335,7 +344,6 @@ async function init () {
           newFiles['src/' + demoFile] = restObj.demoContent
 
           if (restObj.utilsVersion) {
-            utilsRender.props.showBadge = utilsLatestVersion !== restObj.utilsVersion
             formOptions.data.selectUtilsVersion = restObj.utilsVersion
             setEsmUrl('xe-utils', restObj.utilsVersion)
           }
@@ -344,22 +352,18 @@ async function init () {
             setEsmUrl('vue', restObj.vueVersion)
           }
           if (restObj.coreVersion) {
-            vxeCoreRender.props.showBadge = vxeCoreLatestVersion !== restObj.coreVersion
             formOptions.data.selectCoreVersion = restObj.coreVersion
             setEsmUrl('core', restObj.coreVersion)
           }
           if (restObj.uiVersion) {
-            uiRender.props.showBadge = uiLatestVersion !== restObj.uiVersion
             formOptions.data.selectUIVersion = restObj.uiVersion
             setEsmUrl('vxe-pc-ui', restObj.uiVersion)
           }
           if (restObj.tableVersion) {
-            tableRender.props.showBadge = tableLatestVersion !== restObj.tableVersion
             formOptions.data.selectTableVersion = restObj.tableVersion
             setEsmUrl('vxe-table', restObj.tableVersion)
           }
           if (restObj.ganttVersion) {
-            ganttRender.props.showBadge = ganttLatestVersion !== restObj.ganttVersion
             formOptions.data.selectGanttVersion = restObj.ganttVersion
             setEsmUrl('vxe-gantt', restObj.ganttVersion)
           }
@@ -367,6 +371,7 @@ async function init () {
             formOptions.data.selectDesignVersion = restObj.designVersion
             setEsmUrl('vxe-design', restObj.designVersion)
           }
+          checkNewVersion()
           store.setFiles(newFiles, mainFile)
           playgroundObj.value = restObj
         } else {
