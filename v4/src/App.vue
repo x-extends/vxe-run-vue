@@ -36,6 +36,7 @@
 import { ref, computed, reactive } from 'vue'
 import { Repl, useStore, SFCOptions, useVueImportMap, mergeImportMap } from '@vue/repl'
 import { useUtilsStore } from './common/utils'
+import { useZIndexStore } from './common/zIndex'
 import { useVueStore } from './common/vue'
 import { useVxeCoreStore } from './common/vxeCore'
 import { useUIStore } from './common/ui'
@@ -56,6 +57,7 @@ interface PlaygroundVO {
   demoContent: string
   privilege: boolean
   utilsVersion: string
+  zIndexVersion: string
   vueVersion: string
   coreVersion: string
   uiVersion: string
@@ -96,6 +98,7 @@ const createVxeVersionEvent = (name: string) => {
 }
 
 const { utilsLatestVersion, utilsStableVersion, utilsRender } = useUtilsStore()
+const { zIndexLatestVersion, zIndexStableVersion, zIndexRender } = useZIndexStore()
 const { vueStableVersion, vueRender } = useVueStore(createVxeVersionEvent('vue'))
 const { vxeCoreLatestVersion, vxeCoreStableVersion, vxeCoreRender } = useVxeCoreStore()
 const { uiLatestVersion, uiStableVersion, uiRender } = useUIStore(createVxeVersionEvent('vxe-pc-ui'))
@@ -109,6 +112,7 @@ const saveLoading = ref(false)
 const formOptions = reactive({
   data: {
     selectUtilsVersion: utilsStableVersion,
+    selectZIndexVersion: zIndexStableVersion,
     selectVueVersion: vueStableVersion,
     selectCoreVersion: vxeCoreStableVersion,
     selectUIVersion: uiStableVersion,
@@ -118,6 +122,7 @@ const formOptions = reactive({
   },
   items: [
     { field: 'selectUtilsVersion', title: 'xe utils', itemRender: utilsRender },
+    { field: 'selectZIndexVersion', title: 'dom z-index', itemRender: zIndexRender },
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
     { field: 'selectCoreVersion', title: 'vxe core', itemRender: vxeCoreRender },
     { field: 'selectUIVersion', title: 'vxe ui', itemRender: uiRender },
@@ -316,6 +321,7 @@ const { searchQuery } = XEUtils.parseUrl(location.href)
 
 function checkNewVersion () {
   utilsRender.props.showBadge = utilsLatestVersion !== formOptions.data.selectUtilsVersion
+  zIndexRender.props.showBadge = zIndexLatestVersion !== formOptions.data.selectZIndexVersion
   vxeCoreRender.props.showBadge = vxeCoreLatestVersion !== formOptions.data.selectCoreVersion
   uiRender.props.showBadge = uiLatestVersion !== formOptions.data.selectUIVersion
   tableRender.props.showBadge = tableLatestVersion !== formOptions.data.selectTableVersion
@@ -346,6 +352,10 @@ async function init () {
           if (restObj.utilsVersion) {
             formOptions.data.selectUtilsVersion = restObj.utilsVersion
             setEsmUrl('xe-utils', restObj.utilsVersion)
+          }
+          if (restObj.zIndexVersion) {
+            formOptions.data.selectZIndexVersion = restObj.zIndexVersion
+            setEsmUrl('dom-zindex', restObj.zIndexVersion)
           }
           if (restObj.vueVersion) {
             formOptions.data.selectVueVersion = restObj.vueVersion
@@ -476,6 +486,7 @@ const handleSave = async (isFork?: boolean) => {
         demoName: demoFile,
         demoContent: demoContent,
         utilsVersion: formOptions.data.selectUtilsVersion,
+        zIndexVersion: formOptions.data.selectZIndexVersion,
         vueVersion: formOptions.data.selectVueVersion,
         coreVersion: formOptions.data.selectCoreVersion,
         uiVersion: formOptions.data.selectUIVersion,
