@@ -122,7 +122,7 @@ const formOptions = reactive({
   },
   items: [
     { field: 'selectUtilsVersion', title: 'xe utils', itemRender: utilsRender },
-    { field: 'selectZIndexVersion', title: 'dom z-index', itemRender: zIndexRender },
+    // { field: 'selectZIndexVersion', title: 'dom z-index', itemRender: zIndexRender },
     { field: 'selectVueVersion', title: 'vue', itemRender: vueRender },
     { field: 'selectCoreVersion', title: 'vxe core', itemRender: vxeCoreRender },
     { field: 'selectUIVersion', title: 'vxe ui', itemRender: uiRender },
