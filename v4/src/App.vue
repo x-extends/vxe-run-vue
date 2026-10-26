@@ -170,13 +170,13 @@ const sfcOptions = computed(
 const builtinImportMap = computed(() => mergeImportMap(importMap.value, {
   imports: {
     'xe-utils': `${import.meta.env.VITE_APP_CDN_URL}xe-utils@${formOptions.data.selectUtilsVersion}/dist/all.esm.js`,
-    'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@1.0.6/dist/all.esm.js`,
+    'dom-zindex': `${import.meta.env.VITE_APP_CDN_URL}dom-zindex@${formOptions.data.selectZIndexVersion}/dist/all.esm.js`,
     '@vxe-ui/core': `${import.meta.env.VITE_APP_CDN_URL}@vxe-ui/core@${formOptions.data.selectCoreVersion}/dist/all.esm.js`,
     'vxe-pc-ui': `${import.meta.env.VITE_APP_CDN_URL}vxe-pc-ui@${formOptions.data.selectUIVersion}/dist/all.esm.js`,
     'vxe-table': `${import.meta.env.VITE_APP_CDN_URL}vxe-table@${formOptions.data.selectTableVersion}/dist/all.esm.js`,
     'vxe-design': `${import.meta.env.VITE_APP_CDN_URL}vxe-design@${formOptions.data.selectDesignVersion}/dist/all.esm.js`,
     'vxe-gantt': `${import.meta.env.VITE_APP_CDN_URL}vxe-gantt@${formOptions.data.selectGanttVersion}/dist/all.esm.js`,
-    axios: `${import.meta.env.VITE_APP_CDN_URL}axios@1.7.2/esm/axios.min.js`
+    axios: `${import.meta.env.VITE_APP_CDN_URL}axios@1.20.0/dist/esm/axios.min.js`
   }
 }))
 
