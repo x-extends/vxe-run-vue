@@ -10,8 +10,8 @@ export const defaultTarget = 'v4'
 
 /* ==================== 功能开关 ==================== */
 /** 是否启用广告位 */
-export const enableAd = true
+export const enableAd = false
 /** 是否启用赞助商 */
-export const enableSponsors = true
+export const enableSponsors = false
 /** 是否启用强制广告 */
 export const isForceAd = false
