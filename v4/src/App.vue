@@ -5,7 +5,7 @@
         <vxe-button status="primary" icon="vxe-icon-flow-branch" :loading="forkLoading" @click="forkEvent">Fork</vxe-button>
         <vxe-button v-if="playgroundObj && playgroundObj.privilege" status="success" icon="vxe-icon-save" :loading="saveLoading" @click="saveEvent">Save</vxe-button>
         <vxe-button v-if="playgroundObj && searchQuery.k" icon="vxe-icon-copy" @click="copyUrlEvent">Copy URL</vxe-button>
-        <vxe-link v-if="showeNewWinBtn" icon="vxe-icon-send" style="margin-left: 12px;" @click="openUrlEvent">Open New Window</vxe-link>
+        <vxe-button v-if="showeNewWinBtn" icon="vxe-icon-send" @click="openUrlEvent">Open New Window</vxe-button>
       </template>
       <template #right>
         <vxe-form v-bind="formOptions"></vxe-form>
