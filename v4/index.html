@@ -10,8 +10,10 @@
   <body>
     <div id="app"></div>
     <script type="module">
-      const sass = await import('https://jspm.dev/sass')
-      window.compileScss = (code) => sass.compileString(code).css;
+      window.__sassReady__ = import('https://jspm.dev/sass').then((sass) => {
+        window.compileScss = (code) => sass.compileString(code).css
+        return window.compileScss
+      })
     </script>
     <script type="module" src="/src/main.ts"></script>
   </body>

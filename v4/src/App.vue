@@ -650,7 +650,16 @@ const openUrlEvent = () => {
   open(location.href)
 }
 
-init()
+declare global {
+  interface Window {
+    __sassReady__?: Promise<(code: string) => string>
+    compileScss?: (code: string) => string
+  }
+}
+
+Promise.resolve(window.__sassReady__)
+  .catch(() => null)
+  .then(() => init())
 </script>
 
 <style>
