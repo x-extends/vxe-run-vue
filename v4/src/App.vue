@@ -382,15 +382,13 @@ function parseVueWithDOMParser (source: string) {
   return {
     // —— 原有字段，结构不变 ——
     template: extractRawTemplate(raw),
-    script: toScriptObj(normalScriptEl),
+    script: toScriptObj(setupScriptEl || normalScriptEl),
     style: {
       code: firstStyleEl ? firstStyleEl.textContent || '' : '',
       content: firstStyleEl ? firstStyleEl.outerHTML : ''
     },
     styles: styleEls.map(toStyleObj),
 
-    // —— 新增字段 ——
-    scriptSetup: setupScriptEl ? toScriptObj(setupScriptEl) : null,
     customBlocks,
     raw
   }
