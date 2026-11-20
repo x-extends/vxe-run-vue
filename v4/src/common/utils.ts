@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 export function useUtilsStore (events?: any) {
-  const utilsVersionList = ['4.3.0-beta.2', '4.2.3', '4.1.4', '4.1.3', '4.1.1', '4.0.13']
+  const utilsVersionList = ['4.3.0', '4.2.3', '4.1.4', '4.1.3', '4.1.1', '4.0.13']
   const utilsLatestVersion = utilsVersionList[0]
   const utilsStableVersion = '4.2.3'
   const utilsVersionOptions = utilsVersionList.map(v => ({ label: v, value: v }))
